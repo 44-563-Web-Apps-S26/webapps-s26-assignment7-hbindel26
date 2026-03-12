@@ -1,56 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Hayden Reflex Game</title>
+    <title>Hayden reflexes</title>
     <meta charset="UTF-8">
 </head>
-
 <body>
 
-<h1>Hayden's Reflex Game</h1>
+    <h1>Hayden reflexes</h1>
 
-<p id="target">Wait for it...</p>
+    <div id="target">Your time</div>
+    <div id="counter">Count</div>
+    <br>
 
-<button onclick="startGame()">Start</button>
-<button onclick="stopGame()">Stop</button>
+    <button onclick="beginTime()">Go</button>
+    <button onclick="recordTime()">Halt</button>
 
-<p id="result"></p>
+    <script>
+        let haltTime = undefined;
 
-<script>
+        function recordTime() {
+            haltTime = Date.now();
+            console.log(haltTime);
+        }
 
-let startTime = 0;
-let timerID = 0;
+        function beginTime() {
+            haltTime = undefined;
 
-function startGame(){
+            for (let i = 0; i <= 5; i++) {
+                setTimeout(function () {
+                    document.getElementById("counter").innerHTML = i;
+                }, (5 - i) * 1000);
+            }
 
-    document.getElementById("target").innerHTML = "Wait for the word GO!";
-
-    let delay = Math.random() * 5000;
-
-    timerID = setTimeout(function(){
-        document.getElementById("target").innerHTML = "GO!";
-        startTime = Date.now();
-    }, delay);
-}
-
-function stopGame(){
-
-    let stopTime = Date.now();
-
-    if(startTime == 0){
-        clearTimeout(timerID);
-        document.getElementById("result").innerHTML = "Too early!";
-    }
-    else{
-        let reactionTime = stopTime - startTime;
-        document.getElementById("result").innerHTML =
-            "Your reaction time was " + reactionTime + " milliseconds";
-    }
-
-    startTime = 0;
-}
-
-</script>
+            setTimeout(function () {
+                if (haltTime === undefined) {
+                    document.getElementById("target").innerHTML = "Not soon enough";
+                } else {
+                    let targetTime = Date.now();
+                    let elapsedTime = targetTime - haltTime;
+                    document.getElementById("target").innerHTML = "Time was " + elapsedTime;
+                }
+            }, 5000);
+        }
+    </script>
 
 </body>
 </html>

@@ -26,7 +26,9 @@
 <h1>Hayden builds list with divs</h1>
 
 <input type="text" id="inputText" placeholder="Enter item">
+<button onclick="addFront()">Add front</button>
 <button onclick="addEnd()">Add end</button>
+<button onclick="removeEnd()">Remove</button>
 
 <div class="flex-container" id="container">
     <div class="divlist">Item 1</div>
@@ -35,20 +37,28 @@
 
 <script>
 
-function addEnd(){
+    function addEnd(){
 
-    let newDiv = document.createElement("div");
-
-    let text = document.getElementById("inputText").value;
-
-    newDiv.innerHTML = text;
-
-    newDiv.className = "divlist";
-
-    let container = document.getElementById("container");
-
-    container.appendChild(newDiv);
-}
+        let newDiv = document.createElement("div");
+        let text = document.getElementById("inputText").value;
+        newDiv.innerHTML = text;
+        newDiv.className = "divlist";
+        document.getElementById("container").appendChild(newDiv);
+    }
+    function addFront(){
+        let newDiv = document.createElement("div");
+        let text = document.getElementById("inputText").value;
+        newDiv.innerHTML = text;
+        newDiv.className = "divlist";
+        let container = document.getElementById("container");
+        container.insertBefore(newDiv, container.firstChild);
+    }
+    function removeEnd(){
+        let container = document.getElementById("container");
+        if (container.lastElementChild) {
+            container.removeChild(container.lastElementChild);
+        }
+    }
 
 </script>
 
