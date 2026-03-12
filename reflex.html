@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Hayden Reflex Game</title>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+<h1>Hayden's Reflex Game</h1>
+
+<p id="target">Wait for it...</p>
+
+<button onclick="startGame()">Start</button>
+<button onclick="stopGame()">Stop</button>
+
+<p id="result"></p>
+
+<script>
+
+let startTime = 0;
+let timerID = 0;
+
+function startGame(){
+
+    document.getElementById("target").innerHTML = "Wait for the word GO!";
+
+    let delay = Math.random() * 5000;
+
+    timerID = setTimeout(function(){
+        document.getElementById("target").innerHTML = "GO!";
+        startTime = Date.now();
+    }, delay);
+}
+
+function stopGame(){
+
+    let stopTime = Date.now();
+
+    if(startTime == 0){
+        clearTimeout(timerID);
+        document.getElementById("result").innerHTML = "Too early!";
+    }
+    else{
+        let reactionTime = stopTime - startTime;
+        document.getElementById("result").innerHTML =
+            "Your reaction time was " + reactionTime + " milliseconds";
+    }
+
+    startTime = 0;
+}
+
+</script>
+
+</body>
+</html>
