@@ -10,65 +10,165 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" 
     integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" 
-    integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>  
+    integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
+
+  <style>
+    .game-img{
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border: 2px solid #ccc;
+      cursor: pointer;
+    }
+    .help-link{
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="container-fluid text-center">
-        <h1>Hayden's Bird Hunt</h1>
-        <p class="lead">Click on the locations to find the birds, watch out for the forbidden statue</p>
-        <p id="locations">Number of locations checked is zero.</p>
-        <p id="score">Score is zero.</p>
-        <p class="text-primary" style="cursor: pointer;">Click for help.</p>
-        <p id="help">Help report</p>
+  <div class="container-fluid text-center">
+    <h1>Hayden's Bird Hunt</h1>
+    <p class="lead">Click on the locations to find the birds, watch out for the forbidden statue</p>
+    <p id="locations">Number of locations checked is zero.</p>
+    <p id="score">Score is zero.</p>
+    <p class="text-primary" onclick="helpBird()">Click for help.</p>
+    <p id="help">Help report</p>
+  </div>
+  
+  <div class="container mt-4">
+    <div id="board"></div>
   </div>
 
-  <div class="container">
-    <div class="d-flex justify-content-center">
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-    </div>
-    <div class="d-flex justify-content-center">
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-    </div>
-    <div class="d-flex justify-content-center">
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-    </div>
-    <div class="d-flex justify-content-center">
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-    </div>
-    <div class="d-flex justify-content-center">
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-        <div><img src="bush.jpg" alt="bush" width="100" height="100"></div>
-    </div>
-</div>
+  <script>
+    let ids = [];
+    let score = 0;
+    let locationsVisited = 0;
+    let lastLocation = 0;
 
+    let statueLocation = 19;
+    let toucanLocation = 14;
+    let lorikeetLocations = [3, 25];
+    let buntingLocations = [2, 5, 11, 20, 21];
+
+    let gameOver = false;
+
+    function buildBoard(){
+      let board = document.getElementById('board');
+      let index = 0;
+
+      for (let r = 0; r < 5; r++){
+        let rowDiv = document.createElement('div');
+        rowDiv.classList.add('d-flex', 'justify-content-center', 'mb-2');
+
+        for (let c = 0; c < 7; c++){
+          let img = document.createElement('img');
+          img.src = "bush.jpg";
+          img.alt = "bush";
+          img.id = "loc" + index;
+          img.className = "game-img m-1";
+          img.setAttribute("onclick", `check(${index})`);
+
+          ids.push(img.id);
+          rowDiv.appendChild(img);
+          index++;
+        }
+
+        board.appendChild(rowDiv);
+      }
+    }
+
+    function check(position){
+      if (gameOver) {
+        return;
+      }
+
+      let image = document.getElementById("loc" + position);
+
+      if(position === statueLocation) {
+        image.src = "statue of liberty.jpg";
+        image.onclick = null;
+        score -= 3;
+        gameOver = true;
+      }
+      else if(position === toucanLocation) {
+        image.src = "toucan.jpg";
+        image.onclick = null;
+        score += 5;
+      }
+      else if(lorikeetLocations.includes(position)) {
+        image.src = "lorikeet.jpg";
+        image.onclick = null;
+        score += 3;
+      }
+      else if(buntingLocations.includes(position)) {
+        image.src = "bunting.jpg";
+        image.onclick = null;
+        score += 1;
+      }
+
+      locationsVisited++;
+      lastLocation = position;
+
+      document.getElementById("locations").innerHTML =
+        "Number of locations checked is " + locationsVisited + ".";
+      document.getElementById("score").innerHTML =
+        "Score is " + score + ".";
+    }
+
+    function helpBird(){
+      let result = "silence";
+
+      let buntingNeighbors = [
+        (lastLocation - 7 + 35) % 35,
+        (lastLocation + 7) % 35,
+        (lastLocation - 1 + 35) % 35,
+        (lastLocation + 1) % 35
+      ];
+
+      for (let i = 0; i < buntingNeighbors.length; i++){
+        if (buntingLocations.includes(buntingNeighbors[i])){
+          result = "cheep";
+        }
+      }
+
+      if(result === "silence"){
+        let row = Math.floor(lastLocation / 7);
+        let col = lastLocation % 7;
+
+        for (let r = row - 1; r <= row + 1; r++){
+          for (let c = col - 1; c <= col + 1; c++){
+            if (r >= 0 && r < 5 && c >= 0 && c < 7){
+              let pos = r * 7 + c;
+              if (pos === toucanLocation) {
+                result = "caw";
+              }
+            }
+          }
+        }
+      }
+
+      if (result === "silence"){
+        let row = Math.floor(lastLocation / 7);
+        let col = lastLocation % 7;
+
+        for (let r = row - 1; r <= row + 1; r++){
+          for (let c = col - 1; c <= col + 1; c++){
+            if (r >= 0 && r < 5 && c >= 0 && c < 7){
+              let pos = r * 7 + c;
+              if (pos === statueLocation) {
+                result = "thrrum";
+              }
+            }
+          }
+        }
+      }
+
+      document.getElementById("help").innerHTML = result;
+    }
+
+    buildBoard();
+  </script>
 </body>
 </html>
